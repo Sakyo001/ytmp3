@@ -70,12 +70,31 @@ export const metadata: Metadata = {
     siteName: "youtubemp3s",
     url: "/",
     locale: "en_US",
+    images: [
+      {
+        url: "/favicon.png",
+        width: 512,
+        height: 512,
+        alt: "youtubemp3s – Free YouTube to MP3 Converter",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "YouTube to MP3 Converter – Free YouTube MP3 Downloader",
     description:
       "Convert any YouTube video to MP3 audio for free. The fastest online YouTube to MP3 converter. No software needed.",
+    images: ["/favicon.png"],
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
   },
   alternates: {
     canonical: "/",
