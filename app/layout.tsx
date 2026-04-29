@@ -132,6 +132,11 @@ export default function RootLayout({
             }),
           }}
         />
+        <script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="7JKdKAYJMlLAklmqtX/5rw"
+          async
+        />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
