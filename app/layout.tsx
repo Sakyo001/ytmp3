@@ -112,6 +112,7 @@ export default function RootLayout({
       className={`${displayFont.variable} ${monoFont.variable} antialiased`}
     >
       <head>
+      <meta name="yandex-verification" content="9ceee5f277c1c71a" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -137,6 +138,8 @@ export default function RootLayout({
           data-key="7JKdKAYJMlLAklmqtX/5rw"
           async
         />
+        <meta name="yandex-verification" content="9ceee5f277c1c71a" />
+
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
