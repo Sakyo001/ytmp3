@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import Script from "next/script";
 
 /**
  * Extract a YouTube video ID from various URL formats or a raw 11-char ID.
@@ -52,11 +53,132 @@ function CheckIcon() {
   );
 }
 
+/** Native banner ad slot (1:4 format) */
+function NativeBannerAd({ id }: { id: string }) {
+  return (
+    <div className="native-ad-slot">
+      <Script
+        src="https://pl29316187.profitablecpmratenetwork.com/9aa1fc5376c9b81ef843a41d816a8426/invoke.js"
+        data-cfasync="false"
+        strategy="lazyOnload"
+      />
+      <div id={id}></div>
+    </div>
+  );
+}
+
+/** Fake loading overlay shown while "converting" */
+function LoadingOverlay({
+  videoId,
+  progress,
+}: {
+  videoId: string;
+  progress: number;
+}) {
+  const steps = [
+    "Fetching video metadata…",
+    "Extracting audio stream…",
+    "Encoding to MP3…",
+    "Finalising your download…",
+  ];
+  const stepIndex = Math.min(Math.floor(progress / 25), 3);
+
+  return (
+    <div className="loading-overlay" aria-live="polite">
+      {/* Spinner + status */}
+      <div className="loading-top">
+        <div className="loading-spinner">
+          <svg viewBox="0 0 50 50" className="spinner-svg">
+            <circle
+              cx="25"
+              cy="25"
+              r="20"
+              fill="none"
+              stroke="#ff0033"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeDasharray="100"
+              strokeDashoffset={100 - progress}
+            />
+          </svg>
+          <span className="spinner-pct">{Math.round(progress)}%</span>
+        </div>
+        <div className="loading-text">
+          <p className="loading-status">{steps[stepIndex]}</p>
+          <p className="loading-vid">
+            Video ID: <code>{videoId}</code>
+          </p>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="progress-bar-track" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
+        <div
+          className="progress-bar-fill"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      {/* Native ad + smartlink during wait */}
+      <div className="loading-ad-area">
+        <p className="loading-ad-label">⚡ While you wait — sponsored</p>
+        <div id="container-9aa1fc5376c9b81ef843a41d816a8426"></div>
+        <a
+          href="https://www.profitablecpmratenetwork.com/zwvurvzasu?key=8c927f166493b5dddce624bcb1c00e94"
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          className="smartlink-cta"
+          id="smartlink-loading-cta"
+        >
+          🎵 Discover top music tools
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function Page() {
   const [url, setUrl] = useState("");
   const [videoId, setVideoId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [showResult, setShowResult] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadProgress, setLoadProgress] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  const startFakeLoading = useCallback((id: string) => {
+    setIsLoading(true);
+    setLoadProgress(0);
+    setShowResult(false);
+
+    let p = 0;
+    timerRef.current = setInterval(() => {
+      // Ease-in progress: faster at start, slows toward end
+      const increment = p < 60 ? 3.5 : p < 85 ? 1.8 : 0.7;
+      p = Math.min(p + increment, 99);
+      setLoadProgress(p);
+
+      if (p >= 99) {
+        if (timerRef.current) clearInterval(timerRef.current);
+        // Hold briefly at 99% then finish
+        setTimeout(() => {
+          setLoadProgress(100);
+          setTimeout(() => {
+            setIsLoading(false);
+            setVideoId(id);
+            setShowResult(true);
+          }, 350);
+        }, 400);
+      }
+    }, 80);
+  }, []);
 
   const handleConvert = useCallback(() => {
     const id = extractVideoId(url);
@@ -67,19 +189,28 @@ export default function Page() {
       return;
     }
     setError("");
-    setVideoId(id);
-    setShowResult(true);
-  }, [url]);
+    startFakeLoading(id);
+  }, [url, startFakeLoading]);
 
   const handleReset = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
     setUrl("");
     setVideoId(null);
     setError("");
     setShowResult(false);
+    setIsLoading(false);
+    setLoadProgress(0);
   }, []);
 
   return (
     <div className="page-wrapper">
+      {/* Inject native banner script once */}
+      <Script
+        src="https://pl29316187.profitablecpmratenetwork.com/9aa1fc5376c9b81ef843a41d816a8426/invoke.js"
+        data-cfasync="false"
+        strategy="lazyOnload"
+      />
+
       <main className="main-content">
         {/* ── Header ── */}
         <header className="header">
@@ -142,8 +273,9 @@ export default function Page() {
                 }}
                 autoComplete="off"
                 spellCheck={false}
+                disabled={isLoading}
               />
-              {url && (
+              {url && !isLoading && (
                 <button
                   className="clear-btn"
                   id="clear-input"
@@ -175,26 +307,55 @@ export default function Page() {
 
             <button
               id="convert-btn"
-              className="convert-btn"
-              onClick={handleConvert}
+              className={`convert-btn${isLoading ? " loading" : ""}`}
+              onClick={isLoading ? undefined : handleConvert}
+              disabled={isLoading}
             >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
-              Convert to MP3
+              {isLoading ? (
+                <>
+                  <svg
+                    className="btn-spinner"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  >
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  </svg>
+                  Converting…
+                </>
+              ) : (
+                <>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  Convert to MP3
+                </>
+              )}
             </button>
           </div>
+
+          {/* Loading State */}
+          {isLoading && videoId === null && url && (
+            <LoadingOverlay
+              videoId={extractVideoId(url) ?? ""}
+              progress={loadProgress}
+            />
+          )}
 
           {/* Result */}
           {showResult && videoId && (
@@ -229,6 +390,14 @@ export default function Page() {
                   title="Download YouTube video as MP3"
                 />
               </div>
+
+              <button
+                id="convert-another-btn"
+                className="convert-another-btn"
+                onClick={handleReset}
+              >
+                ↩ Convert another video
+              </button>
             </div>
           )}
         </section>
@@ -313,6 +482,11 @@ export default function Page() {
             Shorts.
           </p>
         </section>
+
+        {/* ── Native Banner Ad (between content sections) ── */}
+        <div className="native-ad-slot" aria-hidden="true" id="native-ad-between-sections">
+          <div id="container-9aa1fc5376c9b81ef843a41d816a8426"></div>
+        </div>
 
         {/* ── FAQ (SEO-rich) ── */}
         <section className="faq" id="faq">

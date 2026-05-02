@@ -234,6 +234,177 @@ h1.brand span {
   transform: translateY(0) scale(0.98);
 }
 
+/* ─── Convert Another Button ─── */
+.convert-another-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.convert-another-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: #fff5f5;
+}
+
+/* ─── Loading Button Spinner ─── */
+.convert-btn.loading {
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+.btn-spinner {
+  animation: spin 0.9s linear infinite;
+  transform-origin: center;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Loading Overlay ─── */
+.loading-overlay {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  animation: fadeIn 0.3s ease-out both;
+}
+.loading-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.loading-spinner {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+}
+.spinner-svg {
+  width: 54px;
+  height: 54px;
+  transform: rotate(-90deg);
+  transition: stroke-dashoffset 0.15s linear;
+}
+.spinner-pct {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-mono), monospace;
+}
+.loading-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.loading-status {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.loading-vid {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.loading-vid code {
+  font-family: var(--font-mono), monospace;
+  background: var(--bg-soft);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.77rem;
+  border: 1px solid var(--border);
+}
+
+/* ─── Progress Bar ─── */
+.progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-soft);
+  border-radius: 99px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff0033, #ff6b6b);
+  border-radius: 99px;
+  transition: width 0.15s linear;
+}
+
+/* ─── Loading Ad Area ─── */
+.loading-ad-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  min-height: 60px;
+}
+.loading-ad-label {
+  margin: 0;
+  font-size: 0.73rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+/* ─── Smartlink CTA ─── */
+.smartlink-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: linear-gradient(135deg, #ff0033, #ff4d6d);
+  color: #fff !important;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 3px 10px rgba(255,0,51,0.25);
+  white-space: nowrap;
+}
+.smartlink-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255,0,51,0.35);
+}
+.smartlink-cta:active {
+  transform: translateY(0);
+}
+
+/* ─── Native Ad Slot ─── */
+.native-ad-slot {
+  width: 100%;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
 /* ─── Result Area ─── */
 .result-area {
   display: flex;
