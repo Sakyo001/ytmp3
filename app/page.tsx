@@ -204,14 +204,35 @@ export default function Page() {
 
   return (
     <div className="page-wrapper">
-      {/* Inject native banner script once */}
+      {/* Native banner script — loads lazily, no render block */}
       <Script
         src="https://pl29316187.profitablecpmratenetwork.com/9aa1fc5376c9b81ef843a41d816a8426/invoke.js"
         data-cfasync="false"
         strategy="lazyOnload"
       />
+      {/* 320x50 banner ad script */}
+      <Script
+        id="banner-ad-options"
+        strategy="lazyOnload"
+        dangerouslySetInnerHTML={{
+          __html: `
+            atOptions = {
+              'key' : '07bb90ce7402463a887319c7ebe226a7',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          `,
+        }}
+      />
+      <Script
+        src="https://www.highperformanceformat.com/07bb90ce7402463a887319c7ebe226a7/invoke.js"
+        strategy="lazyOnload"
+      />
 
-      <main className="main-content">
+      <div className="page-body">
+        <main className="main-content">
         {/* ── Header ── */}
         <header className="header">
           <div className="logo-row">
@@ -537,6 +558,35 @@ export default function Page() {
           </div>
         </section>
 
+        {/* ── Alternative Tools ── */}
+        <section className="info-section" id="alternative-youtube-to-mp3-converters">
+          <h2>Alternative YouTube to MP3 Converters</h2>
+          <p>
+            If this site is temporarily unavailable or you&apos;re looking for
+            additional options, the following free YouTube to MP3 converter
+            tools are trusted alternatives you can use:
+          </p>
+          <ul className="alt-links-list">
+            <li>
+              <a
+                href="https://www.youtubemp3s.com/"
+                id="alt-link-youtubemp3s"
+                className="alt-link"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                youtubemp3s.com — Free YouTube to MP3 Converter
+              </a>
+              <span className="alt-link-desc">
+                A reliable online YouTube to MP3 converter with fast conversion speeds and high audio quality.
+              </span>
+            </li>
+          </ul>
+        </section>
+
         {/* ── Footer ── */}
         <footer className="footer">
           <p>
@@ -545,7 +595,42 @@ export default function Page() {
             audio. Not affiliated with YouTube or Google.
           </p>
         </footer>
-      </main>
+        </main>
+
+        {/* ── Right Ad Sidebar ── */}
+        <aside className="ad-sidebar" aria-label="Advertisements">
+
+          {/* Native Banner Panel */}
+          <div className="ad-panel">
+            <div className="ad-panel-header">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+              <span>Advertisements</span>
+            </div>
+            <div className="ad-panel-body">
+              <div id="container-9aa1fc5376c9b81ef843a41d816a8426"></div>
+            </div>
+          </div>
+
+          {/* 320×50 Banner Ad Panel */}
+          <div className="ad-panel">
+            <div className="ad-panel-header">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2"/>
+                <path d="M16 2l-4 5-4-5"/>
+              </svg>
+              <span>Sponsored</span>
+            </div>
+            <div className="ad-panel-body">
+              <div className="banner-ad-wrap">
+                {/* 320×50 ad renders here via the atOptions + invoke.js scripts */}
+              </div>
+            </div>
+          </div>
+
+        </aside>
+      </div>{/* end .page-body */}
     </div>
   );
 }
