@@ -3,6 +3,59 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import Script from "next/script";
 
+type AdTier = "tier1" | "tier2" | "tier3" | "unknown";
+
+const TIER1_COUNTRIES = new Set([
+  "US",
+  "GB",
+  "CA",
+  "AU",
+  "DE",
+  "FR",
+  "NL",
+  "CH",
+  "JP",
+  "AE",
+  "SA",
+]);
+
+const TIER2_COUNTRIES = new Set([
+  "BR",
+  "MX",
+  "ZA",
+  "MY",
+  "TH",
+  "PH",
+  "ID",
+  "IN",
+  "TR",
+  "PL",
+  "BG",
+  "KR",
+]);
+
+const TIER3_COUNTRIES = new Set([
+  "PK",
+  "BD",
+  "NP",
+  "LK",
+  "MM",
+  "NG",
+  "KE",
+  "EG",
+  "MA",
+  "DZ",
+]);
+
+function resolveAdTier(countryCode: string | null): AdTier {
+  if (!countryCode) return "tier3";
+  const code = countryCode.toUpperCase();
+  if (TIER1_COUNTRIES.has(code)) return "tier1";
+  if (TIER2_COUNTRIES.has(code)) return "tier2";
+  if (TIER3_COUNTRIES.has(code)) return "tier3";
+  return "tier2";
+}
+
 /**
  * Extract a YouTube video ID from various URL formats or a raw 11-char ID.
  */
@@ -71,9 +124,13 @@ function NativeBannerAd({ id }: { id: string }) {
 function LoadingOverlay({
   videoId,
   progress,
+  showNativeAd,
+  showSmartlink,
 }: {
   videoId: string;
   progress: number;
+  showNativeAd: boolean;
+  showSmartlink: boolean;
 }) {
   const steps = [
     "Fetching video metadata…",
@@ -119,20 +176,25 @@ function LoadingOverlay({
         />
       </div>
 
-      {/* Native ad + smartlink during wait */}
-      <div className="loading-ad-area">
-        <p className="loading-ad-label">⚡ While you wait — sponsored</p>
-        <div id="container-9aa1fc5376c9b81ef843a41d816a8426"></div>
-        <a
-          href="https://www.profitablecpmratenetwork.com/zwvurvzasu?key=8c927f166493b5dddce624bcb1c00e94"
-          target="_blank"
-          rel="noopener noreferrer sponsored"
-          className="smartlink-cta"
-          id="smartlink-loading-cta"
-        >
-          🎵 Discover top music tools
-        </a>
-      </div>
+      {(showNativeAd || showSmartlink) && (
+        <div className="loading-ad-area">
+          <p className="loading-ad-label">⚡ While you wait — sponsored</p>
+          {showNativeAd && (
+            <div id="container-9aa1fc5376c9b81ef843a41d816a8426"></div>
+          )}
+          {showSmartlink && (
+            <a
+              href="https://www.profitablecpmratenetwork.com/zwvurvzasu?key=8c927f166493b5dddce624bcb1c00e94"
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="smartlink-cta"
+              id="smartlink-loading-cta"
+            >
+              🎵 Discover top music tools
+            </a>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -145,11 +207,41 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [adTier, setAdTier] = useState<AdTier>("unknown");
+
+  const showNativeAds = adTier === "tier1" || adTier === "tier2";
+  const showBannerAds = adTier === "tier2";
+  const showPopunder = adTier === "tier1";
+  const showSmartlinks = adTier === "tier1";
+  const showSidebar = showNativeAds || showBannerAds;
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadGeo() {
+      try {
+        const response = await fetch("https://ipapi.co/json/");
+        if (!response.ok) throw new Error("Geo lookup failed");
+        const data = (await response.json()) as { country_code?: string };
+        if (isMounted) {
+          setAdTier(resolveAdTier(data.country_code ?? null));
+        }
+      } catch {
+        if (isMounted) setAdTier("tier3");
+      }
+    }
+
+    loadGeo();
+
+    return () => {
+      isMounted = false;
     };
   }, []);
 
@@ -205,31 +297,44 @@ export default function Page() {
   return (
     <div className="page-wrapper">
       {/* Native banner script — loads lazily, no render block */}
-      <Script
-        src="https://pl29316187.profitablecpmratenetwork.com/9aa1fc5376c9b81ef843a41d816a8426/invoke.js"
-        data-cfasync="false"
-        strategy="lazyOnload"
-      />
+      {showNativeAds && (
+        <Script
+          src="https://pl29316187.profitablecpmratenetwork.com/9aa1fc5376c9b81ef843a41d816a8426/invoke.js"
+          data-cfasync="false"
+          strategy="lazyOnload"
+        />
+      )}
       {/* 320x50 banner ad script */}
-      <Script
-        id="banner-ad-options"
-        strategy="lazyOnload"
-        dangerouslySetInnerHTML={{
-          __html: `
-            atOptions = {
-              'key' : '07bb90ce7402463a887319c7ebe226a7',
-              'format' : 'iframe',
-              'height' : 50,
-              'width' : 320,
-              'params' : {}
-            };
-          `,
-        }}
-      />
-      <Script
-        src="https://www.highperformanceformat.com/07bb90ce7402463a887319c7ebe226a7/invoke.js"
-        strategy="lazyOnload"
-      />
+      {showBannerAds && (
+        <>
+          <Script
+            id="banner-ad-options"
+            strategy="lazyOnload"
+            dangerouslySetInnerHTML={{
+              __html: `
+                atOptions = {
+                  'key' : '07bb90ce7402463a887319c7ebe226a7',
+                  'format' : 'iframe',
+                  'height' : 50,
+                  'width' : 320,
+                  'params' : {}
+                };
+              `,
+            }}
+          />
+          <Script
+            src="https://www.highperformanceformat.com/07bb90ce7402463a887319c7ebe226a7/invoke.js"
+            strategy="lazyOnload"
+          />
+        </>
+      )}
+      {/* Popunder ad */}
+      {showPopunder && (
+        <Script
+          src="https://pl29316186.profitablecpmratenetwork.com/0a/59/75/0a5975f7af715145ed606195dbf2ddac.js"
+          strategy="afterInteractive"
+        />
+      )}
 
       <div className="page-body">
         <main className="main-content">
@@ -375,6 +480,8 @@ export default function Page() {
             <LoadingOverlay
               videoId={extractVideoId(url) ?? ""}
               progress={loadProgress}
+              showNativeAd={showNativeAds}
+              showSmartlink={showSmartlinks}
             />
           )}
 
@@ -505,9 +612,11 @@ export default function Page() {
         </section>
 
         {/* ── Native Banner Ad (between content sections) ── */}
-        <div className="native-ad-slot" aria-hidden="true" id="native-ad-between-sections">
-          <div id="container-9aa1fc5376c9b81ef843a41d816a8426"></div>
-        </div>
+        {showNativeAds && (
+          <div className="native-ad-slot" aria-hidden="true" id="native-ad-between-sections">
+            <div id="container-9aa1fc5376c9b81ef843a41d816a8426"></div>
+          </div>
+        )}
 
         {/* ── FAQ (SEO-rich) ── */}
         <section className="faq" id="faq">
@@ -598,38 +707,44 @@ export default function Page() {
         </main>
 
         {/* ── Right Ad Sidebar ── */}
-        <aside className="ad-sidebar" aria-label="Advertisements">
+        {showSidebar && (
+          <aside className="ad-sidebar" aria-label="Advertisements">
 
-          {/* Native Banner Panel */}
-          <div className="ad-panel">
-            <div className="ad-panel-header">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              </svg>
-              <span>Advertisements</span>
-            </div>
-            <div className="ad-panel-body">
-              <div id="container-9aa1fc5376c9b81ef843a41d816a8426"></div>
-            </div>
-          </div>
-
-          {/* 320×50 Banner Ad Panel */}
-          <div className="ad-panel">
-            <div className="ad-panel-header">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="7" width="20" height="14" rx="2"/>
-                <path d="M16 2l-4 5-4-5"/>
-              </svg>
-              <span>Sponsored</span>
-            </div>
-            <div className="ad-panel-body">
-              <div className="banner-ad-wrap">
-                {/* 320×50 ad renders here via the atOptions + invoke.js scripts */}
+            {/* Native Banner Panel */}
+            {showNativeAds && (
+              <div className="ad-panel">
+                <div className="ad-panel-header">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                  </svg>
+                  <span>Advertisements</span>
+                </div>
+                <div className="ad-panel-body">
+                  <div id="container-9aa1fc5376c9b81ef843a41d816a8426"></div>
+                </div>
               </div>
-            </div>
-          </div>
+            )}
 
-        </aside>
+            {/* 320×50 Banner Ad Panel */}
+            {showBannerAds && (
+              <div className="ad-panel">
+                <div className="ad-panel-header">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2"/>
+                    <path d="M16 2l-4 5-4-5"/>
+                  </svg>
+                  <span>Sponsored</span>
+                </div>
+                <div className="ad-panel-body">
+                  <div className="banner-ad-wrap">
+                    {/* 320×50 ad renders here via the atOptions + invoke.js scripts */}
+                  </div>
+                </div>
+              </div>
+            )}
+
+          </aside>
+        )}
       </div>{/* end .page-body */}
     </div>
   );

@@ -138,12 +138,6 @@ export default function RootLayout({
           data-key="7JKdKAYJMlLAklmqtX/5rw"
           async
         />
-        {/* Popunder ad – loads silently in background */}
-        <script
-          src="https://pl29316186.profitablecpmratenetwork.com/0a/59/75/0a5975f7af715145ed606195dbf2ddac.js"
-          async
-        />
-
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
