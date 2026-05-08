@@ -213,6 +213,7 @@ export default function Page() {
   const showBannerAds = adTier === "tier2";
   const showPopunder = adTier === "tier1";
   const showSmartlinks = adTier === "tier1";
+  const showSocialBar = adTier === "tier1";
   const showSidebar = showNativeAds || showBannerAds;
 
   // Cleanup on unmount
@@ -335,6 +336,30 @@ export default function Page() {
           strategy="afterInteractive"
         />
       )}
+      {/* Social bar (desktop) */}
+      {showSocialBar && (
+        <>
+          <Script
+            id="social-bar-options"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                atOptions = {
+                  'key' : 'fbedffe88b1eb56652b925dfa5a5e773',
+                  'format' : 'iframe',
+                  'height' : 90,
+                  'width' : 728,
+                  'params' : {}
+                };
+              `,
+            }}
+          />
+          <Script
+            src="https://www.highperformanceformat.com/fbedffe88b1eb56652b925dfa5a5e773/invoke.js"
+            strategy="afterInteractive"
+          />
+        </>
+      )}
 
       <div className="page-body">
         <main className="main-content">
@@ -364,6 +389,12 @@ export default function Page() {
             free.
           </p>
         </header>
+
+        {showSocialBar && (
+          <div className="social-bar-desktop" aria-hidden="true">
+            {/* Social bar ad renders via invoke.js */}
+          </div>
+        )}
 
         {/* ── Converter ── */}
         <section className="converter-card" id="converter">

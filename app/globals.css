@@ -477,6 +477,20 @@ h1.brand span {
   overflow: hidden;
 }
 
+/* ─── Social Bar (Desktop) ─── */
+.social-bar-desktop {
+  width: 100%;
+  max-width: 728px;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+}
+
 /* ─── Result Area ─── */
 .result-area {
   display: flex;
@@ -768,6 +782,10 @@ h1.brand span {
   .ad-panel {
     width: 100%;
     max-width: 500px;
+  }
+
+  .social-bar-desktop {
+    display: none;
   }
 }
 
