@@ -3,59 +3,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import Script from "next/script";
 
-type AdTier = "tier1" | "tier2" | "tier3" | "unknown";
-
-const TIER1_COUNTRIES = new Set([
-  "US",
-  "GB",
-  "CA",
-  "AU",
-  "DE",
-  "FR",
-  "NL",
-  "CH",
-  "JP",
-  "AE",
-  "SA",
-]);
-
-const TIER2_COUNTRIES = new Set([
-  "BR",
-  "MX",
-  "ZA",
-  "MY",
-  "TH",
-  "PH",
-  "ID",
-  "IN",
-  "TR",
-  "PL",
-  "BG",
-  "KR",
-]);
-
-const TIER3_COUNTRIES = new Set([
-  "PK",
-  "BD",
-  "NP",
-  "LK",
-  "MM",
-  "NG",
-  "KE",
-  "EG",
-  "MA",
-  "DZ",
-]);
-
-function resolveAdTier(countryCode: string | null): AdTier {
-  if (!countryCode) return "tier3";
-  const code = countryCode.toUpperCase();
-  if (TIER1_COUNTRIES.has(code)) return "tier1";
-  if (TIER2_COUNTRIES.has(code)) return "tier2";
-  if (TIER3_COUNTRIES.has(code)) return "tier3";
-  return "tier2";
-}
-
 /**
  * Extract a YouTube video ID from various URL formats or a raw 11-char ID.
  */
@@ -207,42 +154,18 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [adTier, setAdTier] = useState<AdTier>("unknown");
 
-  const showNativeAds = adTier === "tier1" || adTier === "tier2";
-  const showBannerAds = adTier === "tier2";
-  const showPopunder = adTier === "tier1";
-  const showSmartlinks = adTier === "tier1";
-  const showSocialBar = adTier === "tier1";
+  const showNativeAds = true;
+  const showBannerAds = true;
+  const showPopunder = true;
+  const showSmartlinks = true;
+  const showSocialBar = true;
   const showSidebar = showNativeAds || showBannerAds;
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadGeo() {
-      try {
-        const response = await fetch("https://ipapi.co/json/");
-        if (!response.ok) throw new Error("Geo lookup failed");
-        const data = (await response.json()) as { country_code?: string };
-        if (isMounted) {
-          setAdTier(resolveAdTier(data.country_code ?? null));
-        }
-      } catch {
-        if (isMounted) setAdTier("tier3");
-      }
-    }
-
-    loadGeo();
-
-    return () => {
-      isMounted = false;
     };
   }, []);
 
