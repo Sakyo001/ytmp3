@@ -15,7 +15,7 @@ const monoFont = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://youtubemp3s.com"
   ),
   applicationName: "youtubemp3s",
   title: {
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
       "Convert any YouTube video to MP3 audio for free. Fast, easy, and no registration required. The best online YouTube to MP3 converter.",
     type: "website",
     siteName: "youtubemp3s",
-    url: "/",
+    url: "https://youtubemp3s.com/",
     locale: "en_US",
     images: [
       {
@@ -97,7 +97,7 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   alternates: {
-    canonical: "/",
+    canonical: "https://youtubemp3s.com/",
   },
 };
 

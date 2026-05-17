@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import Link from "next/link";
 import Script from "next/script";
 
 /**
@@ -145,6 +146,58 @@ function LoadingOverlay({
     </div>
   );
 }
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Is youtubemp3s free to use?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text:
+          "Yes. youtubemp3s is a free YouTube to MP3 converter with no fees, subscriptions, or conversion limits.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How do I convert a YouTube video to MP3?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text:
+          "Paste the YouTube URL into the converter, click Convert to MP3, then download your MP3 file when it is ready.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Do I need to install any software?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text:
+          "No. The YouTube MP3 downloader works directly in your browser on desktop and mobile.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What audio quality does the MP3 download have?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text:
+          "Audio quality depends on the source video, with high-quality options up to 320kbps when available.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Can I use youtubemp3s on my phone?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text:
+          "Yes. youtubemp3s is fully mobile-friendly and works on iPhone, Android, and tablets.",
+      },
+    },
+  ],
+};
 
 export default function Page() {
   const [url, setUrl] = useState("");
@@ -302,15 +355,27 @@ export default function Page() {
                 <circle cx="18" cy="16" r="3" fill="#fff" />
               </svg>
             </div>
-            <h1 className="brand">
+            <p className="brand-name">
               youtube<span>mp3s</span>
-            </h1>
+            </p>
           </div>
-          <p className="tagline">
-            Free YouTube to MP3 converter — convert any YouTube video to MP3
-            audio and download it instantly. No registration, no software, 100%
-            free.
-          </p>
+          <div className="hero">
+            <h1 className="hero-title">
+              Free YouTube to MP3 Converter — Fast, Online &amp; No Signup
+            </h1>
+            <h2 className="hero-subtitle">
+              Convert any YouTube video to MP3 in seconds. High-quality audio up
+              to 320kbps, no registration needed.
+            </h2>
+            <p className="hero-copy">
+              youtubemp3s.com is a free online YouTube to MP3 converter that
+              lets you extract audio from any YouTube video instantly, in
+              seconds. Just paste the URL, choose your quality, and download —
+              no account, no software, no limits. Whether you want to save
+              music, podcasts, or lectures as MP3 files, our YouTube MP3
+              downloader delivers crystal-clear audio directly to your device.
+            </p>
+          </div>
         </header>
 
         {showSocialBar && (
@@ -429,6 +494,11 @@ export default function Page() {
             </button>
           </div>
 
+          <p className="trust-note">
+            <strong>Safe &amp; secure:</strong> We do not store your videos or
+            downloads.
+          </p>
+
           {/* Loading State */}
           {isLoading && videoId === null && url && (
             <LoadingOverlay
@@ -445,8 +515,9 @@ export default function Page() {
               <div className="video-preview">
                 <img
                   src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
-                  alt="YouTube video thumbnail preview"
+                  alt="YouTube to MP3 converter tool"
                   className="thumbnail"
+                  loading="lazy"
                 />
                 <div className="preview-overlay">
                   <span className="preview-id">{videoId}</span>
@@ -543,37 +614,21 @@ export default function Page() {
               <CheckIcon />
               No software installation
             </div>
+            <div className="feature-item">
+              <CheckIcon />
+              Up to 320kbps audio quality
+            </div>
           </div>
         </section>
-
-        {/* ── About / SEO Content ── */}
-        <section className="info-section" id="about-youtube-to-mp3">
-          <h2>Best Free YouTube to MP3 Converter Online</h2>
-          <p>
-            <strong>youtubemp3s</strong> is the fastest and easiest way to
-            convert YouTube videos to MP3 audio online. Our free YouTube to MP3
-            converter lets you download music from YouTube as high-quality MP3
-            files — no software needed. Simply paste a YouTube link and download
-            the audio in seconds.
-          </p>
-          <p>
-            Whether you want to download YouTube music, save a podcast, or
-            extract audio from any YouTube video, youtubemp3s makes it simple.
-            Our YouTube MP3 downloader supports all YouTube URL formats
-            including standard links, short URLs (youtu.be), embeds, and YouTube
-            Shorts.
-          </p>
-        </section>
-
-        {/* ── Native Banner Ad (between content sections) ── */}
-        {showNativeAds && (
-          <div className="native-ad-slot" aria-hidden="true" id="native-ad-between-sections">
-            <div id="container-9aa1fc5376c9b81ef843a41d816a8426"></div>
-          </div>
-        )}
 
         {/* ── FAQ (SEO-rich) ── */}
         <section className="faq" id="faq">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(faqJsonLd).replace(/</g, "\\u003c"),
+            }}
+          />
           <h2>Frequently Asked Questions</h2>
 
           <div className="faq-item">
@@ -621,6 +676,67 @@ export default function Page() {
           </div>
         </section>
 
+        {/* ── Native Banner Ad (between content sections) ── */}
+        {showNativeAds && (
+          <div className="native-ad-slot" aria-hidden="true" id="native-ad-between-sections">
+            <div id="container-9aa1fc5376c9b81ef843a41d816a8426"></div>
+          </div>
+        )}
+
+        {/* ── About / SEO Content ── */}
+        <section className="info-section" id="about-youtube-to-mp3">
+          <h2>Best Free YouTube to MP3 Converter Online</h2>
+          <p>
+            <strong>youtubemp3s</strong> is the fastest and easiest way to
+            convert YouTube videos to MP3 audio online. Our free YouTube to MP3
+            converter lets you download music from YouTube as high-quality MP3
+            files — no software needed. Simply paste a YouTube link and download
+            the audio in seconds.
+          </p>
+          <p>
+            Whether you want to download YouTube music, save a podcast, or
+            extract audio from any YouTube video, youtubemp3s makes it simple.
+            Our YouTube MP3 downloader supports standard links, short URLs
+            (youtu.be), embeds, and YouTube Shorts — all with a safe &amp; secure
+            process.
+          </p>
+        </section>
+
+        {/* ── Guides ── */}
+        <section className="info-section" id="youtube-to-mp3-guides">
+          <h2>YouTube to MP3 Guides</h2>
+          <p>
+            Short, practical tutorials for converting YouTube videos to MP3 on
+            any device.
+          </p>
+          <ul className="guide-list">
+            <li>
+              <Link href="/blog/how-to-convert-youtube-to-mp3-on-iphone" className="guide-link">
+                How to Convert YouTube to MP3 on iPhone
+              </Link>
+              <span className="guide-desc">
+                Step-by-step instructions for iOS using Safari.
+              </span>
+            </li>
+            <li>
+              <Link href="/blog/best-youtube-to-mp3-converter-320kbps" className="guide-link">
+                Best YouTube to MP3 Converter for 320kbps Audio
+              </Link>
+              <span className="guide-desc">
+                How to get the highest-quality MP3 output.
+              </span>
+            </li>
+            <li>
+              <Link href="/blog/youtube-to-mp3-downloader-for-podcasts" className="guide-link">
+                YouTube to MP3 Downloader for Podcasts
+              </Link>
+              <span className="guide-desc">
+                Save talks, interviews, and lectures for offline listening.
+              </span>
+            </li>
+          </ul>
+        </section>
+
         {/* ── Alternative Tools ── */}
         <section className="info-section" id="alternative-youtube-to-mp3-converters">
           <h2>Alternative YouTube to MP3 Converters</h2>
@@ -641,7 +757,7 @@ export default function Page() {
                   <polyline points="15 3 21 3 21 9"/>
                   <line x1="10" y1="14" x2="21" y2="3"/>
                 </svg>
-                youtubemp3s.com — Free YouTube to MP3 Converter
+                ytmp3-nu.com — Free YouTube to MP3 Converter
               </a>
               <span className="alt-link-desc">
                 A reliable online YouTube to MP3 converter with fast conversion speeds and high audio quality.
@@ -652,6 +768,11 @@ export default function Page() {
 
         {/* ── Footer ── */}
         <footer className="footer">
+          <div className="footer-links">
+            <Link href="/about">About</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/blog">Blog</Link>
+          </div>
           <p>
             youtubemp3s &copy; {new Date().getFullYear()} &mdash; Free online
             YouTube to MP3 converter. Convert and download YouTube videos to MP3
