@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s | youtubemp3s – YouTube to MP3 Converter",
   },
   description:
-    "Convert YouTube to MP3 for free. youtubemp3s is the best online YouTube to MP3 converter — download YouTube videos as high-quality MP3 audio instantly. No registration, no software.",
+    "Convert YouTube to MP3 for free with youtubemp3s. Fast online MP3 downloader for YouTube videos with high-quality audio, no signup or software.",
   keywords: [
     "YouTube to MP3",
     "YouTube MP3 converter",
